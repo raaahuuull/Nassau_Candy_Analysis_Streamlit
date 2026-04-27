@@ -13,7 +13,7 @@ st.set_page_config(page_title="Nassau Candy Dashboard", layout="wide")
 # -----------------------------
 @st.cache_data
 def load_default_data():
-    return pd.read_csv("data.csv")  # replace with GitHub raw URL if needed
+    return pd.read_csv("https://raw.githubusercontent.com/raaahuuull/Nassau_Candy_Analysis/refs/heads/main/Nassau%20Candy%20Distributor.csv")  # replace with GitHub raw URL if needed
 
 st.sidebar.header("Data Source")
 
