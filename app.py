@@ -134,22 +134,28 @@ st.plotly_chart(fig, use_container_width=True)
 # -----------------------------
 # HIGH RISK PRODUCTS
 # -----------------------------
-st.subheader("High Risk Products")
-
 prod_full = filtered_df.groupby('Product Name').agg({
     'Sales': 'sum',
     'Gross Profit': 'sum',
     'Units': 'sum'
 }).reset_index()
 
-prod_full['Margin %'] = (prod_full['Gross Profit'] / prod_full['Sales']) * 100
+# Safe margin calculation
+prod_full['Margin %'] = (
+    prod_full['Gross Profit'] / prod_full['Sales']
+).replace([float('inf'), -float('inf')], 0).fillna(0) * 100
 
-high_risk = prod_full[prod_full['Margin %'] < 20]
+# Improved high risk logic
+high_risk = prod_full[
+    (prod_full['Margin %'] < 50) &
+    (prod_full['Sales'] < prod_full['Sales'].quantile(0.4))
+]
 
+# Display
 if high_risk.empty:
-    st.info("No high-risk products found based on current criteria.")
+    st.info("No high-risk products identified based on current thresholds.")
 else:
-    st.dataframe(high_risk)
+    st.dataframe(high_risk.sort_values(by='Margin %'))
 
 # -----------------------------
 # KEY INSIGHTS (FIXED)
@@ -172,7 +178,7 @@ best_product = pareto.iloc[0]
 cutoff_80 = pareto[pareto['Cumulative %'] <= 80]
 
 st.write(f"Top Product: {best_product['Product Name']}")
-st.write(f"{len(cutoff_80)} products generate 80% of total profit")
+st.write(f"{len(cutoff_80)} products contribute ~80% of total profit, indicating strong revenue concentration")
 
 # -----------------------------
 # BUSINESS RECOMMENDATIONS
