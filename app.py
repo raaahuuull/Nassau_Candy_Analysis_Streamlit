@@ -140,6 +140,33 @@ fig.update_layout(
 
 st.plotly_chart(fig, use_container_width=True)
 
+
+# -----------------------------
+# COST vs SALES DIAGNOSTICS
+# -----------------------------
+st.subheader("Cost vs Sales Diagnostics")
+
+fig = px.scatter(
+    filtered_df,
+    x='Sales',
+    y='Cost',
+    color='Division',
+    hover_data=['Product Name'],
+    title='Cost vs Sales Analysis'
+)
+
+# Add reference line (ideal cost line)
+max_val = max(filtered_df['Sales'].max(), filtered_df['Cost'].max())
+
+fig.add_shape(
+    type="line",
+    x0=0, y0=0,
+    x1=max_val, y1=max_val,
+    line=dict(color="red", dash="dash"),
+)
+
+st.plotly_chart(fig, use_container_width=True)
+
 # -----------------------------
 # HIGH RISK PRODUCTS
 # -----------------------------
